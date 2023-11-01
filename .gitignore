@@ -1,0 +1,6 @@
+credentials*
+admin*
+**/__pycache__
+*.log
+*.png
+*.csv
