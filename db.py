@@ -88,6 +88,33 @@ def months_new_users_stats() -> dict:
 
     return months
 
+MONTH = 60 * 60 * 24 * 31
+
+def days_new_users_stats(date: str) -> dict:
+    date_min = datetime.strptime(date, '%Y/%m').timestamp()
+    date_max = date_min + MONTH
+    
+    users = DB.users.find({'register': {'$gt': date_min, '$lt': date_max}})
+    days = {}
+
+    for u in users:
+        reg_time = u['register']
+        reg_date = datetime.fromtimestamp(reg_time)
+        date_s = reg_date.strftime('%Y/%m/%d')
+        date_s_sh = reg_date.strftime('%Y/%m')
+
+        if not date_s in days:
+            days[date_s] = []
+
+        amount = 0.0
+
+        if date_s_sh in u['payments_months']:
+            amount = u['payments_months'][date_s_sh]
+
+        days[date_s].append(amount)
+
+    return days
+
 def search_user(username) -> dict:
     user = DB.users.find_one({'$text': {'$search': username}})
 
